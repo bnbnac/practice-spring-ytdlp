@@ -11,18 +11,15 @@ import java.nio.file.Paths;
 public class DownloadUtil {
     private Path foundFile;
 
-    public Resource getFileAsResource(String dirName) throws IOException {
+    public Resource getFileAsResource(String dir, String name) throws IOException {
         Path temp = Paths.get("temp");
-        Path cur = temp.resolve(dirName);
-
+        Path cur = temp.resolve(dir);
         Files.list(cur).forEach(f -> {
-            Path fname = f.getFileName();
-            foundFile = cur.resolve(fname);
-
+            if (f.getFileName().toString().startsWith(name)) {
+                foundFile = f;
+            }
         });
-
         if (foundFile != null) {
-            System.out.println(new UrlResource(foundFile.toUri()));
             return new UrlResource(foundFile.toUri());
         }
         return null;

@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -17,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 public class HelloController {
+    String fileName;
 
     @GetMapping("/hello")
     public String hello() {
@@ -36,6 +41,8 @@ public class HelloController {
                 "yt-dlp",
                 "-P",
                 "./temp/$dirName",
+                "-o",
+                "%(title)s.%(ext)s",
                 "-f",
                 "ba",
                 addr
@@ -49,8 +56,14 @@ public class HelloController {
             t.printStackTrace();
         }
 
-        // 파일네임 익스 추출
-        model.addAttribute("dirName", dirName + ".webm");
+        Path temp = Paths.get("temp");
+        Path cur = temp.resolve(dirName);
+        Files.list(cur).forEach(f -> {
+            Path p = f.getFileName().normalize();
+            fileName = p.toString();
+        });
+        model.addAttribute("dir", dirName);
+        model.addAttribute("name", fileName);
 
         return "download";
     }

@@ -5,7 +5,7 @@
     <title>downloadPage</title>
 </head>
 <body>
-    <a th:href="'/download/' + ${dirName}">
+    <a th:href="@{'/download/' + ${name}(dir=${dir})}">
         download your video here
     </a>
 </body>
