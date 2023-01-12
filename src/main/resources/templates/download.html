@@ -1,12 +1,16 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.tymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     <title>downloadPage</title>
 </head>
 <body>
     <a th:href="@{'/download/' + ${name}(dir=${dir})}">
-        download your video here
+        다운로드
+    </a> 1분간 유지됩니다.
+    <p />
+    <a th:href="@{'/'}">
+        돌아가기
     </a>
 </body>
 </html>

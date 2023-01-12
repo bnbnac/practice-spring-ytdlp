@@ -7,6 +7,13 @@ plugins {
 group = 'bnbnac'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+apply plugin: 'war'
+bootWar.enabled = false
+war.enabled = true
+
+war {
+	archiveFileName = 'ytdl.war'
+}
 
 repositories {
 	mavenCentral()
@@ -16,6 +23,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
 
 tasks.named('test') {

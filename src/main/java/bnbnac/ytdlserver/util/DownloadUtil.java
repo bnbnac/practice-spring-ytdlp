@@ -12,7 +12,8 @@ public class DownloadUtil {
     private Path foundFile;
 
     public Resource getFileAsResource(String dir, String name) throws IOException {
-        Path temp = Paths.get("temp");
+        Path temp = Paths.get("src");
+        temp = temp.resolve("main").resolve("resources").resolve("temp");
         Path cur = temp.resolve(dir);
         Files.list(cur).forEach(f -> {
             if (f.getFileName().toString().startsWith(name)) {
@@ -20,6 +21,7 @@ public class DownloadUtil {
             }
         });
         if (foundFile != null) {
+            System.out.println(foundFile);
             return new UrlResource(foundFile.toUri());
         }
         return null;
