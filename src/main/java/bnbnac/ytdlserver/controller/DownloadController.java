@@ -1,6 +1,6 @@
 package bnbnac.ytdlserver.controller;
 
-import bnbnac.ytdlserver.util.DownloadUtil;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,36 +11,37 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class DownloadController {
-    @GetMapping("/download/{name}")
-    public ResponseEntity<?> download(@RequestParam("dir") String dir, @PathVariable("name") String name) throws UnsupportedEncodingException {
 
-        DownloadUtil downloadUtil = new DownloadUtil();
-        Resource resource = null;
-        String outName;
-        System.out.println(name);
-        try {
-            resource = downloadUtil.getFileAsResource(dir, name);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        }
-        if (resource == null) {
-            return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
-        }
+    String fileName;
 
-        outName = new String(resource.getFilename().getBytes("UTF-8"), "ISO-8859-1");
+    @GetMapping("/download/{dirName}")
+    public ResponseEntity<Resource> download(@PathVariable("dirName") String dirName) throws IOException {
 
-        String contentType = "application/octet-stream";
-        String headerValue = "attachment; file=\"" + outName + "\"";
+        Path temp = Paths.get("src", "main", "resources", "temp", dirName);
+        Files.list(temp).forEach(f -> {
+            Path p = f.getFileName();
+            fileName = p.toString();
+        });
 
-        System.out.println(outName);
+        File downloadFile = new File((temp.resolve(fileName)).toUri());
+
+        fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(downloadFile));
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                .headers(header)
+                .contentLength(downloadFile.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(resource);
     }
 }

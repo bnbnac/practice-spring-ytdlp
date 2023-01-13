@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Controller
-public class HelloController {
+public class AddressController {
 
     @Autowired
     private final DeleteService deleteService = new DeleteService();
@@ -40,7 +40,7 @@ public class HelloController {
                 "-o",
                 "%(title)s.%(ext)s",
                 "-f",
-                "ba",
+                "m4a",
                 address
         );
 
@@ -59,18 +59,14 @@ public class HelloController {
             t.printStackTrace();
         }
 
-        fileName = getFileName(dirName);
         model.addAttribute("dir", dirName);
-        model.addAttribute("name", fileName);
 
         deleteService.deleteAsync(dirName);
-
         return "download";
     }
 
     public String getFileName(String dirName) throws IOException {
-        Path temp = Paths.get("src").resolve("main").resolve("resources").resolve("temp");
-        temp = temp.resolve(dirName);
+        Path temp = Paths.get("src", "main", "resources", "temp", dirName);
         Files.list(temp).forEach(f -> {
             Path p = f.getFileName().normalize();
             fileName = p.toString();
