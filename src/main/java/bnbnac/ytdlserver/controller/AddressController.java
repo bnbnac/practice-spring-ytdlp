@@ -2,6 +2,7 @@ package bnbnac.ytdlserver.controller;
 
 import bnbnac.ytdlserver.service.DeleteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,14 +30,20 @@ public class AddressController {
         Date date = new Date();
         ProcessBuilder pb = new ProcessBuilder();
 
+        ClassPathResource cpr = new ClassPathResource("temp/hereIsTemp");
+        String parent = cpr.getFile().getParent().toString();
+
         String dirName = String.valueOf(date.hashCode());
+        dirName = dirName.substring(1);
+
         Map<String, String> env = pb.environment();
+        env.put("parent", parent);
         env.put("dirName", dirName);
 
         pb.command(
                 "yt-dlp",
                 "-P",
-                "./src/main/resources/temp/$dirName",
+                "$parent/$dirName",
                 "-o",
                 "%(title)s.%(ext)s",
                 "-f",
@@ -63,14 +70,5 @@ public class AddressController {
 
         deleteService.deleteAsync(dirName);
         return "download";
-    }
-
-    public String getFileName(String dirName) throws IOException {
-        Path temp = Paths.get("src", "main", "resources", "temp", dirName);
-        Files.list(temp).forEach(f -> {
-            Path p = f.getFileName().normalize();
-            fileName = p.toString();
-        });
-        return fileName;
     }
 }

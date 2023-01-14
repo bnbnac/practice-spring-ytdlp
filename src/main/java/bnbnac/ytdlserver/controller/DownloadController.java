@@ -1,5 +1,6 @@
 package bnbnac.ytdlserver.controller;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -24,8 +25,9 @@ public class DownloadController {
 
     @GetMapping("/download/{dirName}")
     public ResponseEntity<Resource> download(@PathVariable("dirName") String dirName) throws IOException {
+        ClassPathResource cpr = new ClassPathResource("temp/hereIsTemp");
+        Path temp = Paths.get(cpr.getFile().getParent().toString(), dirName);
 
-        Path temp = Paths.get("src", "main", "resources", "temp", dirName);
         Files.list(temp).forEach(f -> {
             Path p = f.getFileName();
             fileName = p.toString();
